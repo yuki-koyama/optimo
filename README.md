@@ -28,7 +28,7 @@ OptiMo is an "optimization-guided motion editing" system for authoring 3D charac
 
 ### Included directly
 
-- RBDL <https://bitbucket.org/rbdl/rbdl/> (their source codes for `v2.5.0` are included in this repository)
+- RBDL <https://bitbucket.org/rbdl/rbdl/> (their source codes for `v2.5.0` are included in this repository under the zlib license)
 
 ## Compilation Instruction
 
