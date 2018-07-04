@@ -24,7 +24,7 @@ OptiMo is an "optimization-guided motion editing" system for authoring 3D charac
 - tinycolormap <https://github.com/yuki-koyama/tinycolormap>
 - nlopt-util <https://github.com/yuki-koyama/nlopt-util>
 - three-dim-util <https://github.com/yuki-koyama/three-dim-util>
-- parallel_util <https://github.com/yuki-koyama/parallel_util>
+- parallel-util <https://github.com/yuki-koyama/parallel-util>
 
 ### Included directly
 
