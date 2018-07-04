@@ -4,6 +4,10 @@ OptiMo is an "optimization-guided motion editing" system for authoring 3D charac
 
 ![](docs/system.png)
 
+## Project Web Page
+
+<http://koyama.xyz/project/optimo/>
+
 ## Dependencies
 
 ### Not included
@@ -38,24 +42,20 @@ cmake ../
 make
 ```
 
-Note that the necessary third-party libraries (i.e., Eigen, NLopt, and Qt5) should be installed before building OptiMo. If you use macOS and `brew`, you can easily install them by
+Note that the necessary third-party libraries (i.e., Eigen and Qt5) should be installed before building OptiMo. If you use macOS and `brew`, you can easily install them by
 ```
 brew install eigen qt5
 ```
 
-Note that you might need to specify `CMAKE_PREFIX_PATH` adequately so that CMake can find Qt5.
+In some environments, you might need to specify `CMAKE_PREFIX_PATH` adequately so that CMake can find Qt5.
 
 ## Known Issues (Need Help!)
 
-OptiMo is currently tested on macOS only. It is possible that OptiMo could not be built or run with other platforms such as Windows or Linux. Pull request welcome.
+OptiMo is currently tested on macOS only. It is possible that OptiMo could not be built or run with other platforms such as Windows or Linux. Pull requests are welcome.
 
 ## Publication
 
 Yuki Koyama and Masataka Goto. 2018. OptiMo: Optimization-Guided Motion Editing for Keyframe Character Animation. In Proceedings of 2018 CHI Conference on Human Factors in Computing Systems (CHI '18), pp.161:1--161:12. DOI: <https://doi.org/10.1145/3173574.3173735>
-
-## Project Web Page
-
-<http://koyama.xyz/project/optimo/>
 
 ## Licensing
 
