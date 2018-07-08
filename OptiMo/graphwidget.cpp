@@ -17,7 +17,7 @@
 #include <QMouseEvent>
 #include <GLKit/GLKMatrix4.h>
 #include <Eigen/Core>
-#include <tinycolormap.h>
+#include <tinycolormap.hpp>
 #include <three-dim-util/gl-wrapper.hpp>
 #include <three-dim-util/glut-wrapper.hpp>
 #include "core.h"
@@ -42,9 +42,9 @@ namespace
         glLoadMatrixf(GLKMatrix4MakeOrtho(min_x, max_x, min_y, max_y, - 1.0f, + 1.0f).m);
     }
     
-    inline QColor ConvertEigen2QColor(const Vec3& eigen)
+    inline QColor ConvertColorFormat(const tinycolormap::Color& color)
     {
-        return QColor(255.0 * eigen(0), 255.0 * eigen(1), 255.0 * eigen(2));
+        return QColor(255.0 * color.r(), 255.0 * color.g(), 255.0 * color.b());
     }
     
     std::list<Curve*> GetSelectedCurveList(std::shared_ptr<Object> object)
@@ -53,7 +53,7 @@ namespace
         for (auto item : object->GetItems())
         {
             if (!item->is_selected_) continue;
-
+            
             auto vars = item->GetVariablePointers();
             if (vars[0]->IsKeyframed()) curves.push_back(&vars[0]->curve_);
             if (vars[1]->IsKeyframed()) curves.push_back(&vars[1]->curve_);
@@ -94,7 +94,7 @@ namespace
         glVertex2d(t, v);
         glEnd();
     }
-
+    
     /// \param image QImage that is formatted using QImage::Format_RGBA8888
     void DrawQImages(const QImage& image, double min_x, double max_x, double min_y, double max_y)
     {
@@ -120,7 +120,7 @@ namespace
 GraphWidget::GraphWidget(QWidget *parent) : QOpenGLWidget(parent)
 {
     UpdateValueRange();
-
+    
     // Set the number of samplings for anti-aliasing
     QSurfaceFormat format = QSurfaceFormat::defaultFormat();
     format.setSamples(4);
@@ -150,12 +150,12 @@ void GraphWidget::mousePressEvent(QMouseEvent *event)
 {
     current_mouse_pos_x_ = event->x();
     current_mouse_pos_y_ = event->y();
-
+    
     const Vec2 p_cursor(current_mouse_pos_x_, current_mouse_pos_y_);
     
     std::shared_ptr<DragTarget> drag_target = nullptr;
     double min_dist = 0.0;
-
+    
     auto curves = GetSelectedCurveList(core.object_);
     for (Curve* curve : curves)
     {
@@ -210,14 +210,14 @@ void GraphWidget::mousePressEvent(QMouseEvent *event)
 void GraphWidget::mouseMoveEvent(QMouseEvent *event)
 {
     if (drag_target_ == nullptr) return;
-
+    
     const int diff_x = event->x() - current_mouse_pos_x_;
     const int diff_y = event->y() - current_mouse_pos_y_;
     
     const Vec2 diff(ScaleXToTime(diff_x), use_per_curve_value_range_ ? ScaleYToValue(diff_y, drag_target_->curve_ptr) : ScaleYToValue(diff_y));
     const Vec2 backward = Vec2(drag_target_->control_point_ptr->time_backward, drag_target_->control_point_ptr->GetValueBackward());
     const Vec2 forward  = Vec2(drag_target_->control_point_ptr->time_forward, drag_target_->control_point_ptr->GetValueForward());
-
+    
     switch (drag_target_->target_type)
     {
         case TargetType::CENTER:
@@ -256,7 +256,7 @@ void GraphWidget::mouseMoveEvent(QMouseEvent *event)
     current_mouse_pos_y_ = event->y();
     
     core.ClearOptimizationCache();
-
+    
     main_window_->main_widget_->update();
     update();
 }
@@ -264,12 +264,12 @@ void GraphWidget::mouseMoveEvent(QMouseEvent *event)
 void GraphWidget::mouseReleaseEvent(QMouseEvent* /* event */)
 {
     if (drag_target_ == nullptr) return;
-
+    
     drag_target_ = nullptr;
     
     core.PushHistory();
     core.UpdateOriginalParameters(core.object_->GetDescriptor());
-
+    
     update();
 }
 
@@ -303,10 +303,10 @@ void GraphWidget::paintGL()
             double x = ((static_cast<double>(i) + 0.5) / static_cast<double>(width)) * (max_t_ - min_t_) + min_t_;
             
             const double weight = core.GetCostWeight(x);
-            Eigen::Vector3d color = tinycolormap::GetGrayColor(1.0 - weight);
-            weight_texture->setPixelColor(i, 0, ConvertEigen2QColor(color));
+            const auto   color  = tinycolormap::GetGrayColor(1.0 - weight);
+            weight_texture->setPixelColor(i, 0, ConvertColorFormat(color));
         }
-
+        
         // Draw the image as GL texture
         DrawQImages(*weight_texture, min_t_, max_t_, min_v_, max_v_);
     }
@@ -319,9 +319,9 @@ void GraphWidget::paintGL()
         auto cost_texture = std::make_shared<QImage>(width, 1, QImage::Format_RGBA8888);
         for (int i = 0; i < width; ++ i)
         {
-            const double cost = cache.local_cost_sequence[i];
-            Eigen::Vector3d color = tinycolormap::GetHotColor(1.0 - std::sqrt(cost / core.max_cost_));
-            cost_texture->setPixelColor(i, 0, ConvertEigen2QColor(color));
+            const double cost  = cache.local_cost_sequence[i];
+            const auto   color = tinycolormap::GetHotColor(1.0 - std::sqrt(cost / core.max_cost_));
+            cost_texture->setPixelColor(i, 0, ConvertColorFormat(color));
         }
 #else
         const int width = 1000;
@@ -330,12 +330,12 @@ void GraphWidget::paintGL()
         {
             double x = ((static_cast<double>(i) + 0.5) / static_cast<double>(width)) * (max_t_ - min_t_) + min_t_;
             
-            const double cost = core.CalculateTorques(x).squaredNorm();
-            Eigen::Vector3d color = tinycolormap::GetHotColor(1.0 - std::sqrt(cost / core.max_cost_));
-            cost_texture->setPixelColor(i, 0, ConvertEigen2QColor(color));
+            const double cost  = core.CalculateTorques(x).squaredNorm();
+            const auto   color = tinycolormap::GetHotColor(1.0 - std::sqrt(cost / core.max_cost_));
+            cost_texture->setPixelColor(i, 0, ConvertColorFormat(color));
         }
 #endif
-
+        
         // Calculate adequate stretches
         const double n = cost_texture->width();
         const double min_t = cache.time_sequence[0];
@@ -343,7 +343,7 @@ void GraphWidget::paintGL()
         const double min_u = 1.0 / (2.0 * n);
         const double max_u = 1.0 - 1.0 / (2.0 * n);
         auto u2t = [&](double u) { return (u - min_u) * (max_t - min_t) / (max_u - min_u) + min_t; };
-
+        
         // Draw the image as GL texture
         DrawQImages(*cost_texture, u2t(0.0), u2t(1.0), min_v_, max_v_);
     }
@@ -513,7 +513,7 @@ void GraphWidget::UpdateValueRange()
     for (auto item : core.object_->GetItems())
     {
         if (!item->is_selected_) continue;
-
+        
         for (const Variable* var : item->GetVariablePointers())
         {
             if (!var->IsKeyframed()) continue;
@@ -590,6 +590,3 @@ double GraphWidget::ConvertValueToY(double v, const Curve* curve) const
     const double min_v = curve->GetMinimumKeyValue() - per_curve_value_padding_;
     return height() - (v - min_v) * height() / (max_v - min_v);
 }
-
-
-
