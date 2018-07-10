@@ -16,6 +16,7 @@ OptiMo is an "optimization-guided motion editing" system for authoring 3D charac
 - Qt5 <http://doc.qt.io/qt-5/>
 - OpenGL <https://www.opengl.org/>
 - GLUT <https://www.opengl.org/resources/libraries/glut/>
+- GLKit <https://developer.apple.com/documentation/glkit>
 
 ### Included via gitsubmodule
 
