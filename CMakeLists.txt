@@ -103,7 +103,7 @@ ExternalProject_Add(
 ExternalProject_Add(
 	three-dim-util
 	GIT_REPOSITORY ${CMAKE_SOURCE_DIR}/external/three-dim-util
-	GIT_TAG v0.1.0
+	GIT_TAG v0.2.0
 	INSTALL_DIR ${EXTERNAL_INSTALL_DIR}
 	CMAKE_ARGS -DCMAKE_INSTALL_PREFIX:PATH=<INSTALL_DIR>
 )

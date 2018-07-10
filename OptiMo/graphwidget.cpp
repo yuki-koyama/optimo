@@ -15,11 +15,11 @@
 #include <cfloat>
 #include <QImage>
 #include <QMouseEvent>
-#include <GLKit/GLKMatrix4.h>
 #include <Eigen/Core>
 #include <tinycolormap.hpp>
 #include <three-dim-util/gl-wrapper.hpp>
 #include <three-dim-util/glut-wrapper.hpp>
+#include <three-dim-util/matrix.hpp>
 #include "core.h"
 #include "mainwindow.h"
 #include "mainwidget.h"
@@ -30,6 +30,7 @@ using threedimutil::glColor;
 using threedimutil::glVertex;
 using Vec2 = Eigen::Vector2d;
 using Vec3 = Eigen::Vector3d;
+using Mat4 = Eigen::Matrix4d;
 
 #define USE_CACHE_FOR_COST_VISUALIZATION
 
@@ -39,7 +40,8 @@ namespace
     
     inline void SetOrthMatrix(double min_x, double max_x, double min_y, double max_y)
     {
-        glLoadMatrixf(GLKMatrix4MakeOrtho(min_x, max_x, min_y, max_y, - 1.0f, + 1.0f).m);
+        const Mat4 ortho_proj_matrix = threedimutil::makeOrtho2d(min_x, max_x, min_y, max_y);
+        glLoadMatrixd(ortho_proj_matrix.data());
     }
     
     inline QColor ConvertColorFormat(const tinycolormap::Color& color)
