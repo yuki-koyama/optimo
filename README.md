@@ -13,7 +13,7 @@ OptiMo is an "optimization-guided motion editing" system for authoring 3D charac
 ### Not included
 
 - Eigen <http://eigen.tuxfamily.org/>
-- Qt5 <http://doc.qt.io/qt-5/>
+- Qt (5.6 or higher) <http://doc.qt.io/qt-5/>
 - OpenGL <https://www.opengl.org/>
 - GLUT <https://www.opengl.org/resources/libraries/glut/>
 
@@ -42,9 +42,9 @@ cmake ../
 make
 ```
 
-Note that the necessary third-party libraries (i.e., Eigen and Qt5) should be installed before building OptiMo. If you use macOS and `brew`, you can easily install them by
+Note that the necessary third-party libraries (i.e., Eigen and Qt) should be installed before building OptiMo. If you use macOS and `brew`, you can easily install them by
 ```
-brew install eigen qt5
+brew install eigen qt
 ```
 
 In some environments, you might need to specify `CMAKE_PREFIX_PATH` adequately so that CMake can find Qt5.
