@@ -16,6 +16,7 @@
 #include <three-dim-util/gl.hpp>
 #include <three-dim-util/gl-wrapper.hpp>
 #include <three-dim-util/glut-wrapper.hpp>
+#include <three-dim-util/matrix.hpp>
 #include "core.h"
 #include "util.h"
 #include "jointweightdialog.h"
@@ -24,17 +25,10 @@ using Eigen::Vector3d;
 using Eigen::Vector2d;
 using Eigen::Matrix4d;
 using Eigen::Affine3d;
-using threedimutil::glColor;
-using threedimutil::glVertex;
 
 namespace
 {
     Core& core = Core::GetInstance();
-    
-    void LookAt(const Vector3d& position, const Vector3d& target, const Vector3d& up)
-    {
-        gluLookAt(position(0), position(1), position(2), target(0), target(1), target(2), up(0), up(1), up(2));
-    }
 }
 
 MainWidget::MainWidget(QWidget *parent) : QOpenGLWidget(parent)
@@ -63,21 +57,20 @@ void MainWidget::mousePressEvent(QMouseEvent *event)
         this->makeCurrent();
         
         glMatrixMode(GL_MODELVIEW);
-        glLoadIdentity();
-        LookAt(core.camera_.position_, core.camera_.target_, core.camera_.up_);
-
+        glLoadMatrixd(threedimutil::make_look_at(core.camera_).data());
+        
         // Retrieve the model view matrix
         Matrix4d modelview_matrix;
         glGetDoublev(GL_MODELVIEW_MATRIX, modelview_matrix.data());
         const Affine3d modelview_affine(modelview_matrix);
-
+        
         // Retrieve the projection matrix
         Matrix4d projection_matrix;
         glGetDoublev(GL_PROJECTION_MATRIX, projection_matrix.data());
-
+        
         // Release this gl context
         this->doneCurrent();
-
+        
         
         // Find the closest item
         double min_dist = 0.0;
@@ -104,7 +97,7 @@ void MainWidget::mousePressEvent(QMouseEvent *event)
         if (min_dist < threshold)
         {
             std::cout << min_item_ptr->GetName() << std::endl;
-
+            
             // Ask the user to specify the weight
             JointWeightDialog dialog(this, min_item_ptr->GetName());
             dialog.exec();
@@ -123,7 +116,7 @@ void MainWidget::mouseMoveEvent(QMouseEvent *event)
     const int y_dev = devicePixelRatio() * event->y();
     
     core.camera_.MoveTrackball(x_dev, y_dev);
-
+    
     update();
 }
 
@@ -144,14 +137,14 @@ void MainWidget::wheelEvent(QWheelEvent *event)
 void MainWidget::initializeGL()
 {
     glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
-  
+    
     glEnable(GL_LINE_SMOOTH);
     glEnable(GL_POLYGON_SMOOTH);
     glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
     glHint(GL_POLYGON_SMOOTH_HINT, GL_NICEST);
     
     glEnable(GL_DEPTH_TEST);
-
+    
     // Lighting
     glEnable(GL_COLOR_MATERIAL);
     glEnable(GL_LIGHTING);
@@ -167,24 +160,23 @@ void MainWidget::resizeGL(int w, int h)
 void MainWidget::paintGL()
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
+    
     const double aspect = static_cast<double>(this->width()) / static_cast<double>(this->height());
     
     // Set projection matrix
     glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();
-    gluPerspective(core.camera_.vertical_angle_of_view_, aspect, 0.05, 20.0);
-
+    glLoadMatrixd(threedimutil::make_perspective(core.camera_.vertical_angle_of_view(), aspect, 0.05, 20.0).data());
+    
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
-
+    
     glLightfv(GL_LIGHT0, GL_POSITION, std::vector<GLfloat>{ + 1.0, 2.0, 3.0, 0.0 }.data());
     glLightfv(GL_LIGHT1, GL_POSITION, std::vector<GLfloat>{ - 1.0, 0.0, 3.0, 0.0 }.data());
     
-    LookAt(core.camera_.position_, core.camera_.target_, core.camera_.up_);
-
+    glLoadMatrixd(threedimutil::make_look_at(core.camera_).data());
+    
     const double t = core.current_frame_;
-
+    
     // Draw the main character
     core.object_->Draw(t);
     
@@ -209,17 +201,17 @@ void MainWidget::paintGL()
             const Eigen::Affine3d transformation = joint->parent_.lock()->GetAffineRelativeToWorld(t);
             glPushMatrix();
             glMultMatrixd(transformation.data());
-
+            
             const Eigen::Vector3d local_torque = tau.segment(i * 3, 3);
             const Eigen::Vector3d scaled_local_torque = core.drawing_scale_ * (max_length / core.max_torque_) * local_torque;
-
-            glColor(color1);
+            
+            threedimutil::color_3d(color1);
             threedimutil::drawCylinder(radius, scaled_local_torque, Vector3d::Zero());
             threedimutil::drawSphere(radius, scaled_local_torque);
-            glColor(color2);
+            threedimutil::color_3d(color2);
             threedimutil::drawCylinder(radius, Vector3d::Zero(), - scaled_local_torque);
             threedimutil::drawSphere(radius, - scaled_local_torque);
-
+            
             glPopMatrix();
             
             ++ i;

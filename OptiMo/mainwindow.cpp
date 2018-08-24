@@ -469,25 +469,25 @@ void MainWindow::on_treeWidget_itemSelectionChanged()
 
 void MainWindow::on_actionSet_Predefined_Camera_Position_1_triggered()
 {
-    core.camera_.position_ = Eigen::Vector3d(- 2.0, 0.0, 3.0);
+    core.camera_.position() = Eigen::Vector3d(- 2.0, 0.0, 3.0);
     ui->mainWidget->update();
 }
 
 void MainWindow::on_actionSet_Predefined_Camera_Position_2_triggered()
 {
     // For the conductor scene v3.3
-    core.camera_.position_ = Eigen::Vector3d(- 3.0, 3.0, 9.0);
-    core.camera_.target_   = Eigen::Vector3d(  0.0, 3.0, 0.5);
-    core.camera_.vertical_angle_of_view_ = 30.0;
+    core.camera_.position() = Eigen::Vector3d(- 3.0, 3.0, 9.0);
+    core.camera_.target()   = Eigen::Vector3d(  0.0, 3.0, 0.5);
+    core.camera_.vertical_angle_of_view() = 30.0;
     ui->mainWidget->update();
 }
 
 void MainWindow::on_actionSet_Predefined_Camera_Position_3_triggered()
 {
     // For the fox tail scene v3.1
-    core.camera_.position_ = Eigen::Vector3d(- 5.499, 4.318, 13.955);
-    core.camera_.target_   = Eigen::Vector3d(  0.038, 1.858,  1.928);
-    core.camera_.vertical_angle_of_view_ = 30.0;
+    core.camera_.position() = Eigen::Vector3d(- 5.499, 4.318, 13.955);
+    core.camera_.target()   = Eigen::Vector3d(  0.038, 1.858,  1.928);
+    core.camera_.vertical_angle_of_view() = 30.0;
     ui->mainWidget->update();
 }
 

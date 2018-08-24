@@ -26,8 +26,6 @@
 
 using Eigen::Vector2d;
 using Eigen::Vector3d;
-using threedimutil::glColor;
-using threedimutil::glVertex;
 using Vec2 = Eigen::Vector2d;
 using Vec3 = Eigen::Vector3d;
 using Mat4 = Eigen::Matrix4d;
@@ -40,8 +38,7 @@ namespace
     
     inline void SetOrthMatrix(double min_x, double max_x, double min_y, double max_y)
     {
-        const Mat4 ortho_proj_matrix = threedimutil::makeOrtho2d(min_x, max_x, min_y, max_y);
-        glLoadMatrixd(ortho_proj_matrix.data());
+        glLoadMatrixd(threedimutil::make_ortho_2d(min_x, max_x, min_y, max_y).data());
     }
     
     inline QColor ConvertColorFormat(const tinycolormap::Color& color)
@@ -77,7 +74,7 @@ namespace
         const double v = point.GetV();
         
         // Note: the backward handle of the first point and the forward handle of the last points are not drawn
-        glColor(handle_color);
+        threedimutil::color_3d(handle_color);
         glLineWidth(handle_width);
         glPointSize(handle_size);
         glBegin(GL_LINE_STRIP);
@@ -90,7 +87,7 @@ namespace
         if (!is_last)  glVertex2d(t + point.time_forward, v + point.GetValueForward());
         glEnd();
         
-        glColor(point_color);
+        threedimutil::color_3d(point_color);
         glPointSize(control_point_size);
         glBegin(GL_POINTS);
         glVertex2d(t, v);
@@ -351,7 +348,7 @@ void GraphWidget::paintGL()
     }
     
     // Draw vertical lines
-    glColor(color_.grid_line);
+    threedimutil::color_3d(color_.grid_line);
     for (int i = core.min_frame_; i <= core.max_frame_; ++ i)
     {
         const double x      = static_cast<double>(i);
@@ -383,12 +380,12 @@ void GraphWidget::paintGL()
         }
         
         // Draw the primary curve
-        glColor(curve_color, alpha);
+        threedimutil::color_4d(curve_color, alpha);
         glLineWidth(curve_width);
         glBegin(GL_LINE_STRIP);
         for (const auto& p : sampling_points)
         {
-            glVertex(p);
+            threedimutil::vertex_2d(p);
         }
         glEnd();
         
@@ -497,7 +494,7 @@ void GraphWidget::paintGL()
         const double y      = 0.5 * (max_v_ + min_v_);
         const double size_x = (current_frame_width / width()) * (max_t_ - min_t_);
         const double size_y = max_v_ - min_v_;
-        glColor(color_.current_frame);
+        threedimutil::color_3d(color_.current_frame);
         threedimutil::drawRectangle(x, y, size_x, size_y);
     }
 }

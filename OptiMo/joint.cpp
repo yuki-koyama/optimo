@@ -13,6 +13,7 @@
 #include <three-dim-util/gl.hpp>
 #include <three-dim-util/gl-wrapper.hpp>
 #include <three-dim-util/glut-wrapper.hpp>
+#include <three-dim-util/draw-functions.hpp>
 #include "core.h"
 #include "ikhandler.h"
 
@@ -27,8 +28,6 @@ using Eigen::Vector3d;
 using Eigen::Vector4d;
 using Eigen::AngleAxisd;
 using Eigen::Affine3d;
-using threedimutil::glColor;
-using threedimutil::glVertex;
 
 namespace
 {
@@ -160,7 +159,7 @@ void Joint::Draw(double t) const
     if (!parent_.expired())
     {
         const double radius = core.drawing_scale_ * 0.02;
-        glColor(is_selected_ ? color_.bone_selected : color_.bone_unselected);
+        threedimutil::color_3d(is_selected_ ? color_.bone_selected : color_.bone_unselected);
         threedimutil::drawCylinder(radius, offset_, Vector3d::Zero());
     }
     
@@ -169,14 +168,14 @@ void Joint::Draw(double t) const
     
     if (IsControlledByIk() && associated_ik_handler_.lock()->is_selected_)
     {
-        glColor(color_.joint_ik_selected);
+        threedimutil::color_3d(color_.joint_ik_selected);
     }
     else
     {
-        glColor(is_selected_ ? color_.joint_selected : color_.joint_unselected);
+        threedimutil::color_3d(is_selected_ ? color_.joint_selected : color_.joint_unselected);
     }
     const double cube_size = core.drawing_scale_ * 0.10;
-    threedimutil::drawCube(cube_size);
+    threedimutil::draw_cube(cube_size);
     
     for (const auto& child : children_)
     {
