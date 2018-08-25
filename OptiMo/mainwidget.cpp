@@ -15,8 +15,8 @@
 #include <Eigen/Geometry>
 #include <three-dim-util/gl.hpp>
 #include <three-dim-util/gl-wrapper.hpp>
-#include <three-dim-util/glut-wrapper.hpp>
 #include <three-dim-util/matrix.hpp>
+#include <three-dim-util/draw-functions.hpp>
 #include "core.h"
 #include "util.h"
 #include "jointweightdialog.h"
@@ -206,11 +206,11 @@ void MainWidget::paintGL()
             const Eigen::Vector3d scaled_local_torque = core.drawing_scale_ * (max_length / core.max_torque_) * local_torque;
             
             threedimutil::color_3d(color1);
-            threedimutil::drawCylinder(radius, scaled_local_torque, Vector3d::Zero());
-            threedimutil::drawSphere(radius, scaled_local_torque);
+            threedimutil::draw_cylinder(radius, scaled_local_torque, Vector3d::Zero());
+            threedimutil::draw_sphere(radius, scaled_local_torque);
             threedimutil::color_3d(color2);
-            threedimutil::drawCylinder(radius, Vector3d::Zero(), - scaled_local_torque);
-            threedimutil::drawSphere(radius, - scaled_local_torque);
+            threedimutil::draw_cylinder(radius, Vector3d::Zero(), - scaled_local_torque);
+            threedimutil::draw_sphere(radius, - scaled_local_torque);
             
             glPopMatrix();
             

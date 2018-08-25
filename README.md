@@ -15,7 +15,6 @@ OptiMo is an "optimization-guided motion editing" system for authoring 3D charac
 - Eigen <http://eigen.tuxfamily.org/>
 - Qt (5.6 or higher) <http://doc.qt.io/qt-5/>
 - OpenGL (2.1 or higher) <https://www.opengl.org/>
-- GLUT <https://www.opengl.org/resources/libraries/glut/>
 - glm <https://glm.g-truc.net/>
 
 ### Included via gitsubmodule

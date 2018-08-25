@@ -12,7 +12,6 @@
 #include "joint.h"
 #include <three-dim-util/gl.hpp>
 #include <three-dim-util/gl-wrapper.hpp>
-#include <three-dim-util/glut-wrapper.hpp>
 #include <three-dim-util/draw-functions.hpp>
 #include "core.h"
 #include "ikhandler.h"
@@ -160,7 +159,7 @@ void Joint::Draw(double t) const
     {
         const double radius = core.drawing_scale_ * 0.02;
         threedimutil::color_3d(is_selected_ ? color_.bone_selected : color_.bone_unselected);
-        threedimutil::drawCylinder(radius, offset_, Vector3d::Zero());
+        threedimutil::draw_cylinder(radius, offset_, Vector3d::Zero());
     }
     
     const Affine3d mat = GetAffineRelativeToParent(t);

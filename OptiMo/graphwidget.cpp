@@ -18,8 +18,8 @@
 #include <Eigen/Core>
 #include <tinycolormap.hpp>
 #include <three-dim-util/gl-wrapper.hpp>
-#include <three-dim-util/glut-wrapper.hpp>
 #include <three-dim-util/matrix.hpp>
+#include <three-dim-util/draw-functions.hpp>
 #include "core.h"
 #include "mainwindow.h"
 #include "mainwidget.h"
@@ -355,7 +355,7 @@ void GraphWidget::paintGL()
         const double y      = 0.5 * (max_v_ + min_v_);
         const double size_x = (grid_line_width / width()) * (max_t_ - min_t_);
         const double size_y = max_v_ - min_v_;
-        threedimutil::drawRectangle(x, y, size_x, size_y);
+        threedimutil::draw_rectangle(Vec2(x, y), size_x, size_y);
     }
     
     // Define the drawing process for a curve
@@ -495,7 +495,7 @@ void GraphWidget::paintGL()
         const double size_x = (current_frame_width / width()) * (max_t_ - min_t_);
         const double size_y = max_v_ - min_v_;
         threedimutil::color_3d(color_.current_frame);
-        threedimutil::drawRectangle(x, y, size_x, size_y);
+        threedimutil::draw_rectangle(Vec2(x, y), size_x, size_y);
     }
 }
 

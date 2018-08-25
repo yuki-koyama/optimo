@@ -13,7 +13,7 @@
 #include <thread>
 #include <rbdl/rbdl.h>
 #include <three-dim-util/gl.hpp>
-#include <three-dim-util/glut-wrapper.hpp>
+#include <three-dim-util/draw-functions.hpp>
 #include "core.h"
 #include "joint.h"
 
@@ -193,7 +193,7 @@ void IkHandler::Draw(double t) const
 
     const double radius = core.drawing_scale_ * 0.10;
     glColor3d(0.1, 0.1, 0.6);
-    threedimutil::drawSphere(radius, target_position_in_world);
+    threedimutil::draw_sphere(radius, target_position_in_world);
 }
 
 void IkHandler::AddKeyframe(int t, const Eigen::Vector3d &position, double smoothness)
