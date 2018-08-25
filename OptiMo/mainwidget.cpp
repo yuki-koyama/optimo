@@ -49,7 +49,7 @@ void MainWidget::mousePressEvent(QMouseEvent *event)
     if (event->modifiers() == Qt::AltModifier)
     {
         core.camera_.BeginTrackball(x_dev, y_dev, threedimutil::Camera::Mode::Rotate);
-        update();
+        if (!core.is_playing_) { update(); }
     }
     else
     {
@@ -57,7 +57,7 @@ void MainWidget::mousePressEvent(QMouseEvent *event)
         this->makeCurrent();
         
         glMatrixMode(GL_MODELVIEW);
-        glLoadMatrixd(threedimutil::make_look_at(core.camera_).data());
+        threedimutil::load_matrix(threedimutil::make_look_at(core.camera_));
         
         // Retrieve the model view matrix
         Matrix4d modelview_matrix;
@@ -70,7 +70,6 @@ void MainWidget::mousePressEvent(QMouseEvent *event)
         
         // Release this gl context
         this->doneCurrent();
-        
         
         // Find the closest item
         double min_dist = 0.0;
@@ -105,7 +104,7 @@ void MainWidget::mousePressEvent(QMouseEvent *event)
         else
         {
             core.camera_.BeginTrackball(x_dev, y_dev, threedimutil::Camera::Mode::Pan);
-            update();
+            if (!core.is_playing_) { update(); }
         }
     }
 }
@@ -117,13 +116,13 @@ void MainWidget::mouseMoveEvent(QMouseEvent *event)
     
     core.camera_.MoveTrackball(x_dev, y_dev);
     
-    update();
+    if (!core.is_playing_) { update(); }
 }
 
 void MainWidget::mouseReleaseEvent(QMouseEvent *)
 {
     core.camera_.EndTrackball();
-    update();
+    if (!core.is_playing_) { update(); }
 }
 
 void MainWidget::wheelEvent(QWheelEvent *event)
@@ -131,7 +130,7 @@ void MainWidget::wheelEvent(QWheelEvent *event)
     core.camera_.BeginTrackball(0, 0, threedimutil::Camera::Mode::Zoom);
     core.camera_.MoveTrackball (0, event->delta());
     core.camera_.EndTrackball  ();
-    update();
+    if (!core.is_playing_) { update(); }
 }
 
 void MainWidget::initializeGL()
@@ -218,4 +217,3 @@ void MainWidget::paintGL()
         }
     }
 }
-
