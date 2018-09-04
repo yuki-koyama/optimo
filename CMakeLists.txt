@@ -24,10 +24,6 @@ endif()
 # Dependencies
 find_package(Eigen3 REQUIRED)
 find_package(Qt5 COMPONENTS Widgets OpenGL Concurrent REQUIRED)
-find_package(OpenGL REQUIRED)
-include_directories(${EIGEN3_INCLUDE_DIR})
-include_directories(${Qt5Gui_INCLUDE_DIRS})
-include_directories(${OPENGL_INCLUDE_DIRS})
 
 set(THREEDIMUTIL_BUILD_DEMOS OFF CACHE INTERNAL "" FORCE)
 add_subdirectory(${CMAKE_SOURCE_DIR}/external/three-dim-util)
@@ -49,7 +45,7 @@ file(GLOB files ${CMAKE_SOURCE_DIR}/OptiMo/*.cpp ${CMAKE_SOURCE_DIR}/OptiMo/*.h 
 # Executable definition for macOS
 add_executable(OptiMo MACOSX_BUNDLE ${files})
 set_target_properties(OptiMo PROPERTIES MACOSX_BUNDLE_INFO_PLIST ${CMAKE_SOURCE_DIR}/resources/Info.plist.in)
-target_link_libraries(OptiMo Qt5::Widgets Qt5::Concurrent Qt5::OpenGL ${OPENGL_LIBRARIES} rbdl nlopt json11 three-dim-util parallel-util)
+target_link_libraries(OptiMo Qt5::Widgets Qt5::Concurrent Qt5::OpenGL rbdl nlopt json11 three-dim-util parallel-util Eigen3::Eigen)
 
 ######################################################################
 # Build rules for external projects
