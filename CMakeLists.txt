@@ -31,6 +31,8 @@ add_subdirectory(${CMAKE_SOURCE_DIR}/external/three-dim-util)
 set(PARALLELUTIL_BUILD_TESTS OFF CACHE INTERNAL "" FORCE)
 add_subdirectory(${CMAKE_SOURCE_DIR}/external/parallel-util)
 
+add_subdirectory(${CMAKE_SOURCE_DIR}/external/nlopt-util)
+
 # Qt Widgets
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTOUIC ON)
@@ -45,7 +47,7 @@ file(GLOB files ${CMAKE_SOURCE_DIR}/OptiMo/*.cpp ${CMAKE_SOURCE_DIR}/OptiMo/*.h 
 # Executable definition for macOS
 add_executable(OptiMo MACOSX_BUNDLE ${files})
 set_target_properties(OptiMo PROPERTIES MACOSX_BUNDLE_INFO_PLIST ${CMAKE_SOURCE_DIR}/resources/Info.plist.in)
-target_link_libraries(OptiMo Qt5::Widgets Qt5::Concurrent Qt5::OpenGL rbdl nlopt json11 three-dim-util parallel-util Eigen3::Eigen)
+target_link_libraries(OptiMo Qt5::Widgets Qt5::Concurrent Qt5::OpenGL rbdl nlopt json11 three-dim-util parallel-util Eigen3::Eigen nlopt-util)
 
 ######################################################################
 # Build rules for external projects
@@ -101,11 +103,4 @@ ExternalProject_Add(
 	INSTALL_DIR ${EXTERNAL_INSTALL_DIR}
 	CMAKE_ARGS -DCMAKE_INSTALL_PREFIX:PATH=<INSTALL_DIR>
 )
-ExternalProject_Add(
-	nlopt-util
-	GIT_REPOSITORY ${CMAKE_SOURCE_DIR}/external/nlopt-util
-	GIT_TAG v0.1.0
-	INSTALL_DIR ${EXTERNAL_INSTALL_DIR}
-	CMAKE_ARGS -DCMAKE_INSTALL_PREFIX:PATH=<INSTALL_DIR>
-)
-add_dependencies(OptiMo rbdl nlopt json11 tinycolormap nlopt-util)
+add_dependencies(OptiMo rbdl nlopt json11 tinycolormap)
