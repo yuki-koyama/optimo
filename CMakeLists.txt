@@ -33,6 +33,9 @@ add_subdirectory(${CMAKE_SOURCE_DIR}/external/parallel-util)
 
 add_subdirectory(${CMAKE_SOURCE_DIR}/external/nlopt-util)
 
+set(TINYCOLORMAP_BUILD_TOOLS OFF CACHE INTERNAL "" FORCE)
+add_subdirectory(${CMAKE_SOURCE_DIR}/external/tinycolormap)
+
 # Qt Widgets
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTOUIC ON)
@@ -96,11 +99,4 @@ ExternalProject_Add(
 	-DJSON11_BUILD_TESTS=OFF
 	-DJSON11_ENABLE_DR1467_CANARY=OFF
 )
-ExternalProject_Add(
-	tinycolormap
-	GIT_REPOSITORY ${CMAKE_SOURCE_DIR}/external/tinycolormap
-	GIT_TAG v0.3.1
-	INSTALL_DIR ${EXTERNAL_INSTALL_DIR}
-	CMAKE_ARGS -DCMAKE_INSTALL_PREFIX:PATH=<INSTALL_DIR>
-)
-add_dependencies(OptiMo rbdl nlopt json11 tinycolormap)
+add_dependencies(OptiMo rbdl nlopt json11)
