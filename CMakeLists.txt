@@ -50,7 +50,7 @@ file(GLOB files ${CMAKE_SOURCE_DIR}/OptiMo/*.cpp ${CMAKE_SOURCE_DIR}/OptiMo/*.h 
 # Executable definition for macOS
 add_executable(OptiMo MACOSX_BUNDLE ${files})
 set_target_properties(OptiMo PROPERTIES MACOSX_BUNDLE_INFO_PLIST ${CMAKE_SOURCE_DIR}/resources/Info.plist.in)
-target_link_libraries(OptiMo Qt5::Widgets Qt5::Concurrent Qt5::OpenGL rbdl nlopt json11 three-dim-util parallel-util Eigen3::Eigen nlopt-util)
+target_link_libraries(OptiMo Qt5::Widgets Qt5::Concurrent Qt5::OpenGL rbdl nlopt json11 three-dim-util parallel-util Eigen3::Eigen nlopt-util tinycolormap)
 
 ######################################################################
 # Build rules for external projects
