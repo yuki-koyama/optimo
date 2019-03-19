@@ -23,18 +23,22 @@ endif()
 
 # Dependencies
 find_package(Eigen3 REQUIRED)
-find_package(Qt5 COMPONENTS Widgets OpenGL Concurrent REQUIRED)
+find_package(Qt5 5.6 COMPONENTS Concurrent Gui Widgets REQUIRED)
+
+set(JSON11_BUILD_TESTS          OFF CACHE INTERNAL "" FORCE)
+set(JSON11_ENABLE_DR1467_CANARY OFF CACHE INTERNAL "" FORCE)
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/external/json11)
 
 set(THREEDIMUTIL_BUILD_DEMOS OFF CACHE INTERNAL "" FORCE)
-add_subdirectory(${CMAKE_SOURCE_DIR}/external/three-dim-util)
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/external/three-dim-util)
 
 set(PARALLELUTIL_BUILD_TESTS OFF CACHE INTERNAL "" FORCE)
-add_subdirectory(${CMAKE_SOURCE_DIR}/external/parallel-util)
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/external/parallel-util)
 
-add_subdirectory(${CMAKE_SOURCE_DIR}/external/nlopt-util)
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/external/nlopt-util)
 
 set(TINYCOLORMAP_BUILD_TOOLS OFF CACHE INTERNAL "" FORCE)
-add_subdirectory(${CMAKE_SOURCE_DIR}/external/tinycolormap)
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/external/tinycolormap)
 
 # Qt Widgets
 set(CMAKE_AUTOMOC ON)
@@ -42,15 +46,15 @@ set(CMAKE_AUTOUIC ON)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 # Main header files
-include_directories(${CMAKE_SOURCE_DIR}/OptiMo)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/OptiMo)
 
 # Main source files
-file(GLOB files ${CMAKE_SOURCE_DIR}/OptiMo/*.cpp ${CMAKE_SOURCE_DIR}/OptiMo/*.h ${CMAKE_SOURCE_DIR}/OptiMo/*.ui)
+file(GLOB files ${CMAKE_CURRENT_SOURCE_DIR}/OptiMo/*.cpp ${CMAKE_CURRENT_SOURCE_DIR}/OptiMo/*.h ${CMAKE_CURRENT_SOURCE_DIR}/OptiMo/*.ui)
 
 # Executable definition for macOS
 add_executable(OptiMo MACOSX_BUNDLE ${files})
-set_target_properties(OptiMo PROPERTIES MACOSX_BUNDLE_INFO_PLIST ${CMAKE_SOURCE_DIR}/resources/Info.plist.in)
-target_link_libraries(OptiMo Qt5::Widgets Qt5::Concurrent Qt5::OpenGL rbdl nlopt json11 three-dim-util parallel-util Eigen3::Eigen nlopt-util tinycolormap)
+set_target_properties(OptiMo PROPERTIES MACOSX_BUNDLE_INFO_PLIST ${CMAKE_CURRENT_SOURCE_DIR}/resources/Info.plist.in)
+target_link_libraries(OptiMo Qt5::Concurrent Qt5::Gui Qt5::Widgets rbdl nlopt json11 three-dim-util parallel-util Eigen3::Eigen nlopt-util tinycolormap)
 
 ######################################################################
 # Build rules for external projects
@@ -59,14 +63,14 @@ target_link_libraries(OptiMo Qt5::Widgets Qt5::Concurrent Qt5::OpenGL rbdl nlopt
 include(ExternalProject)
 ExternalProject_Add(
 	rbdl
-	SOURCE_DIR ${CMAKE_SOURCE_DIR}/external/rbdl-v2.5.0
+	SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/external/rbdl-v2.5.0
 	INSTALL_DIR ${EXTERNAL_INSTALL_DIR}
-	CMAKE_ARGS 
-	-DCMAKE_INSTALL_PREFIX:PATH=<INSTALL_DIR> 
-	-DCMAKE_MACOSX_RPATH=ON 
-	-DRBDL_BUILD_STATIC=ON 
-	-DRBDL_BUILD_ADDON_BENCHMARK=OFF 
-	-DRBDL_BUILD_ADDON_LUAMODEL=OFF 
+	CMAKE_ARGS
+	-DCMAKE_INSTALL_PREFIX:PATH=<INSTALL_DIR>
+	-DCMAKE_MACOSX_RPATH=ON
+	-DRBDL_BUILD_STATIC=ON
+	-DRBDL_BUILD_ADDON_BENCHMARK=OFF
+	-DRBDL_BUILD_ADDON_LUAMODEL=OFF
 	-DRBDL_BUILD_ADDON_URDFREADER=OFF
 	-DRBDL_BUILD_PYTHON_WRAPPER=OFF
 	-DRBDL_BUILD_TESTS=OFF
@@ -76,10 +80,10 @@ ExternalProject_Add(
 )
 ExternalProject_Add(
 	nlopt
-	GIT_REPOSITORY ${CMAKE_SOURCE_DIR}/external/nlopt
+	GIT_REPOSITORY ${CMAKE_CURRENT_SOURCE_DIR}/external/nlopt
 	GIT_TAG eafdc8ce9403a4e1532239c1bebbdb86064eda38
 	INSTALL_DIR ${EXTERNAL_INSTALL_DIR}
-	CMAKE_ARGS 
+	CMAKE_ARGS
 	-DCMAKE_INSTALL_PREFIX:PATH=<INSTALL_DIR>
 	-DBUILD_SHARED_LIBS=OFF
 	-DNLOPT_GUILE=OFF
@@ -89,14 +93,4 @@ ExternalProject_Add(
 	-DNLOPT_PYTHON=OFF
 	-DNLOPT_SWIG=OFF
 )
-ExternalProject_Add(
-	json11
-	GIT_REPOSITORY ${CMAKE_SOURCE_DIR}/external/json11
-	GIT_TAG ec4e45219af1d7cde3d58b49ed762376fccf1ace
-	INSTALL_DIR ${EXTERNAL_INSTALL_DIR}
-	CMAKE_ARGS 
-	-DCMAKE_INSTALL_PREFIX:PATH=<INSTALL_DIR>
-	-DJSON11_BUILD_TESTS=OFF
-	-DJSON11_ENABLE_DR1467_CANARY=OFF
-)
-add_dependencies(OptiMo rbdl nlopt json11)
+add_dependencies(OptiMo rbdl nlopt)
