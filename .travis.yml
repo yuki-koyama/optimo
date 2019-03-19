@@ -17,7 +17,6 @@ addons:
     packages:
     - cmake
     - libeigen3-dev
-    - qt5-default
 before_script:
 - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then git clone https://github.com/g-truc/glm.git; fi
 - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then mkdir build-glm; fi
@@ -26,5 +25,8 @@ before_script:
 - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then make && sudo make install; fi
 - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then cd ..; fi
 - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then rm -rf glm build-glm; fi
+- if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then wget http://download.qt.io/official_releases/qt/5.12/5.12.2/qt-opensource-linux-x64-5.12.2.run; fi
+- if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then chmod +x qt-opensource-linux-x64-5.12.2.run; fi
+- if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then ./qt-opensource-linux-x64-5.12.2.run; fi
 script:
 - cmake . && make
