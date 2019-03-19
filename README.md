@@ -10,12 +10,11 @@ OptiMo is an "optimization-guided motion editing" system for authoring 3D charac
 
 ## Dependencies
 
-### Not included
+### Prerequisites
 
-- Eigen <http://eigen.tuxfamily.org/>
-- Qt (5.6 or higher) <http://doc.qt.io/qt-5/>
-- OpenGL (2.1 or higher) <https://www.opengl.org/>
-- glm <https://glm.g-truc.net/>
+- Eigen 3 <http://eigen.tuxfamily.org/> (`brew install eigen`)
+- Qt (5.6 or higher) <http://doc.qt.io/qt-5/> (`brew install qt`)
+- glm <https://glm.g-truc.net/> (`brew install glm`)
 
 ### Included via gitsubmodule
 
@@ -30,9 +29,13 @@ OptiMo is an "optimization-guided motion editing" system for authoring 3D charac
 
 - RBDL <https://bitbucket.org/rbdl/rbdl/> (their source codes for `v2.5.0` are included in this repository under the zlib license)
 
+### Runtime
+
+- OpenGL 2.1 (or compatible with 2.1)
+
 ## Compilation Instruction
 
-CMake <https://cmake.org/> is used for managing source codes. OptiMo can be built by, for example, 
+CMake <https://cmake.org/> is used for managing source codes. OptiMo can be built by, for example,
 ```
 git clone https://github.com/yuki-koyama/optimo.git --recursive
 cd optimo
@@ -42,16 +45,9 @@ cmake ../
 make
 ```
 
-Note that the necessary third-party libraries (i.e., Eigen and Qt) should be installed before building OptiMo. If you use macOS and `brew`, you can easily install them by
-```
-brew install eigen qt
-```
-
-In some environments, you might need to specify `CMAKE_PREFIX_PATH` adequately so that CMake can find Qt5.
-
 ## Known Issues (Need Help!)
 
-OptiMo is currently tested on macOS only. It is possible that OptiMo could not be built or run with other platforms such as Windows or Linux. Pull requests are welcome.
+OptiMo is currently tested on __macOS only__. It is possible that OptiMo could not be built or run with other platforms such as Windows or Linux. Pull requests are welcome.
 
 ## Publication
 
