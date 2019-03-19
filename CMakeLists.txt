@@ -25,6 +25,10 @@ endif()
 find_package(Eigen3 REQUIRED)
 find_package(Qt5 COMPONENTS Concurrent Gui Widgets REQUIRED)
 
+set(JSON11_BUILD_TESTS          OFF CACHE INTERNAL "" FORCE)
+set(JSON11_ENABLE_DR1467_CANARY OFF CACHE INTERNAL "" FORCE)
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/external/json11)
+
 set(THREEDIMUTIL_BUILD_DEMOS OFF CACHE INTERNAL "" FORCE)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/external/three-dim-util)
 
@@ -89,14 +93,4 @@ ExternalProject_Add(
 	-DNLOPT_PYTHON=OFF
 	-DNLOPT_SWIG=OFF
 )
-ExternalProject_Add(
-	json11
-	GIT_REPOSITORY ${CMAKE_CURRENT_SOURCE_DIR}/external/json11
-	GIT_TAG ec4e45219af1d7cde3d58b49ed762376fccf1ace
-	INSTALL_DIR ${EXTERNAL_INSTALL_DIR}
-	CMAKE_ARGS
-	-DCMAKE_INSTALL_PREFIX:PATH=<INSTALL_DIR>
-	-DJSON11_BUILD_TESTS=OFF
-	-DJSON11_ENABLE_DR1467_CANARY=OFF
-)
-add_dependencies(OptiMo rbdl nlopt json11)
+add_dependencies(OptiMo rbdl nlopt)
