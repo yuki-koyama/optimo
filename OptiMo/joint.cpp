@@ -10,9 +10,9 @@
  */
 
 #include "joint.h"
-#include <three-dim-util/gl.hpp>
-#include <three-dim-util/gl-wrapper.hpp>
-#include <three-dim-util/draw-functions.hpp>
+#include <three-dim-util/opengl2/draw-functions.hpp>
+#include <three-dim-util/opengl2/gl.hpp>
+#include <three-dim-util/opengl2/gl-wrappers.hpp>
 #include "core.h"
 #include "ikhandler.h"
 
@@ -152,8 +152,8 @@ Eigen::Affine3d Joint::GetConfigurationOfRigidBodyInWorld(double t) const
 
 void Joint::Draw(double t) const
 {
-    glMatrixMode(GL_MODELVIEW);
-    glPushMatrix();
+    threedimutil::gl()->glMatrixMode(GL_MODELVIEW);
+    threedimutil::gl()->glPushMatrix();
     
     if (!parent_.expired())
     {
@@ -163,7 +163,7 @@ void Joint::Draw(double t) const
     }
     
     const Affine3d mat = GetAffineRelativeToParent(t);
-    glMultMatrixd(mat.data());
+    threedimutil::gl()->glMultMatrixd(mat.data());
     
     if (IsControlledByIk() && associated_ik_handler_.lock()->is_selected_)
     {
@@ -181,7 +181,7 @@ void Joint::Draw(double t) const
         child->Draw(t);
     }
     
-    glPopMatrix();
+    threedimutil::gl()->glPopMatrix();
 }
 
 std::shared_ptr<Joint> Joint::AddChild(const Vector3d& offset, const Vector3d& rotation, const std::string& name)

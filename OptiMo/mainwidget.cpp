@@ -13,10 +13,10 @@
 #include <iostream>
 #include <QMouseEvent>
 #include <Eigen/Geometry>
-#include <three-dim-util/gl.hpp>
-#include <three-dim-util/gl-wrapper.hpp>
 #include <three-dim-util/matrix.hpp>
-#include <three-dim-util/draw-functions.hpp>
+#include <three-dim-util/opengl2/gl.hpp>
+#include <three-dim-util/opengl2/gl-wrappers.hpp>
+#include <three-dim-util/opengl2/draw-functions.hpp>
 #include "core.h"
 #include "util.h"
 #include "jointweightdialog.h"
@@ -56,17 +56,17 @@ void MainWidget::mousePressEvent(QMouseEvent *event)
         // Make this gl context current
         this->makeCurrent();
         
-        glMatrixMode(GL_MODELVIEW);
+        threedimutil::gl()->glMatrixMode(GL_MODELVIEW);
         threedimutil::load_matrix(threedimutil::make_look_at(core.camera_));
         
         // Retrieve the model view matrix
         Matrix4d modelview_matrix;
-        glGetDoublev(GL_MODELVIEW_MATRIX, modelview_matrix.data());
+        threedimutil::gl()->glGetDoublev(GL_MODELVIEW_MATRIX, modelview_matrix.data());
         const Affine3d modelview_affine(modelview_matrix);
         
         // Retrieve the projection matrix
         Matrix4d projection_matrix;
-        glGetDoublev(GL_PROJECTION_MATRIX, projection_matrix.data());
+        threedimutil::gl()->glGetDoublev(GL_PROJECTION_MATRIX, projection_matrix.data());
         
         // Release this gl context
         this->doneCurrent();
@@ -135,44 +135,44 @@ void MainWidget::wheelEvent(QWheelEvent *event)
 
 void MainWidget::initializeGL()
 {
-    glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+    threedimutil::gl()->glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
     
-    glEnable(GL_LINE_SMOOTH);
-    glEnable(GL_POLYGON_SMOOTH);
-    glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
-    glHint(GL_POLYGON_SMOOTH_HINT, GL_NICEST);
+    threedimutil::gl()->glEnable(GL_LINE_SMOOTH);
+    threedimutil::gl()->glEnable(GL_POLYGON_SMOOTH);
+    threedimutil::gl()->glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
+    threedimutil::gl()->glHint(GL_POLYGON_SMOOTH_HINT, GL_NICEST);
     
-    glEnable(GL_DEPTH_TEST);
+    threedimutil::gl()->glEnable(GL_DEPTH_TEST);
     
     // Lighting
-    glEnable(GL_COLOR_MATERIAL);
-    glEnable(GL_LIGHTING);
-    glEnable(GL_LIGHT0);
-    glEnable(GL_LIGHT1);
+    threedimutil::gl()->glEnable(GL_COLOR_MATERIAL);
+    threedimutil::gl()->glEnable(GL_LIGHTING);
+    threedimutil::gl()->glEnable(GL_LIGHT0);
+    threedimutil::gl()->glEnable(GL_LIGHT1);
 }
 
 void MainWidget::resizeGL(int w, int h)
 {
-    glViewport(0, 0, w, h);
+    threedimutil::gl()->glViewport(0, 0, w, h);
 }
 
 void MainWidget::paintGL()
 {
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    threedimutil::gl()->glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     
     const double aspect = static_cast<double>(this->width()) / static_cast<double>(this->height());
     
     // Set projection matrix
-    glMatrixMode(GL_PROJECTION);
-    glLoadMatrixd(threedimutil::make_perspective(core.camera_.vertical_angle_of_view(), aspect, 0.05, 20.0).data());
+    threedimutil::gl()->glMatrixMode(GL_PROJECTION);
+    threedimutil::gl()->glLoadMatrixd(threedimutil::make_perspective(core.camera_.vertical_angle_of_view(), aspect, 0.05, 20.0).data());
     
-    glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity();
+    threedimutil::gl()->glMatrixMode(GL_MODELVIEW);
+    threedimutil::gl()->glLoadIdentity();
     
-    glLightfv(GL_LIGHT0, GL_POSITION, std::vector<GLfloat>{ + 1.0, 2.0, 3.0, 0.0 }.data());
-    glLightfv(GL_LIGHT1, GL_POSITION, std::vector<GLfloat>{ - 1.0, 0.0, 3.0, 0.0 }.data());
+    threedimutil::gl()->glLightfv(GL_LIGHT0, GL_POSITION, std::vector<GLfloat>{ + 1.0, 2.0, 3.0, 0.0 }.data());
+    threedimutil::gl()->glLightfv(GL_LIGHT1, GL_POSITION, std::vector<GLfloat>{ - 1.0, 0.0, 3.0, 0.0 }.data());
     
-    glLoadMatrixd(threedimutil::make_look_at(core.camera_).data());
+    threedimutil::gl()->glLoadMatrixd(threedimutil::make_look_at(core.camera_).data());
     
     const double t = core.current_frame_;
     
@@ -198,8 +198,8 @@ void MainWidget::paintGL()
             }
             
             const Eigen::Affine3d transformation = joint->parent_.lock()->GetAffineRelativeToWorld(t);
-            glPushMatrix();
-            glMultMatrixd(transformation.data());
+            threedimutil::gl()->glPushMatrix();
+            threedimutil::gl()->glMultMatrixd(transformation.data());
             
             const Eigen::Vector3d local_torque = tau.segment(i * 3, 3);
             const Eigen::Vector3d scaled_local_torque = core.drawing_scale_ * (max_length / core.max_torque_) * local_torque;
@@ -211,7 +211,7 @@ void MainWidget::paintGL()
             threedimutil::draw_cylinder(radius, Vector3d::Zero(), - scaled_local_torque);
             threedimutil::draw_sphere(radius, - scaled_local_torque);
             
-            glPopMatrix();
+            threedimutil::gl()->glPopMatrix();
             
             ++ i;
         }

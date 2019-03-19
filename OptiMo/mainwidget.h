@@ -20,10 +20,6 @@ class MainWidget : public QOpenGLWidget
 public:
     explicit MainWidget(QWidget *parent = nullptr);
 
-signals:
-
-public slots:
-    
 protected:
     void initializeGL();
     void resizeGL(int w, int h);

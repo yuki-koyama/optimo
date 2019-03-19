@@ -17,9 +17,9 @@
 #include <QMouseEvent>
 #include <Eigen/Core>
 #include <tinycolormap.hpp>
-#include <three-dim-util/gl-wrapper.hpp>
 #include <three-dim-util/matrix.hpp>
-#include <three-dim-util/draw-functions.hpp>
+#include <three-dim-util/opengl2/draw-functions.hpp>
+#include <three-dim-util/opengl2/gl-wrappers.hpp>
 #include "core.h"
 #include "mainwindow.h"
 #include "mainwidget.h"
@@ -38,7 +38,7 @@ namespace
     
     inline void SetOrthMatrix(double min_x, double max_x, double min_y, double max_y)
     {
-        glLoadMatrixd(threedimutil::make_ortho_2d(min_x, max_x, min_y, max_y).data());
+        threedimutil::gl()->glLoadMatrixd(threedimutil::make_ortho_2d(min_x, max_x, min_y, max_y).data());
     }
     
     inline QColor ConvertColorFormat(const tinycolormap::Color& color)
@@ -75,44 +75,44 @@ namespace
         
         // Note: the backward handle of the first point and the forward handle of the last points are not drawn
         threedimutil::color_3d(handle_color);
-        glLineWidth(handle_width);
-        glPointSize(handle_size);
-        glBegin(GL_LINE_STRIP);
-        if (!is_first) glVertex2d(t + point.time_backward, v + point.GetValueBackward());
-        glVertex2d(t, v);
-        if (!is_last)  glVertex2d(t + point.time_forward, v + point.GetValueForward());
-        glEnd();
-        glBegin(GL_POINTS);
-        if (!is_first) glVertex2d(t + point.time_backward, v + point.GetValueBackward());
-        if (!is_last)  glVertex2d(t + point.time_forward, v + point.GetValueForward());
-        glEnd();
+        threedimutil::gl()->glLineWidth(handle_width);
+        threedimutil::gl()->glPointSize(handle_size);
+        threedimutil::gl()->glBegin(GL_LINE_STRIP);
+        if (!is_first) { threedimutil::gl()->glVertex2d(t + point.time_backward, v + point.GetValueBackward()); }
+        threedimutil::gl()->glVertex2d(t, v);
+        if (!is_last)  { threedimutil::gl()->glVertex2d(t + point.time_forward, v + point.GetValueForward()); }
+        threedimutil::gl()->glEnd();
+        threedimutil::gl()->glBegin(GL_POINTS);
+        if (!is_first) { threedimutil::gl()->glVertex2d(t + point.time_backward, v + point.GetValueBackward()); }
+        if (!is_last)  { threedimutil::gl()->glVertex2d(t + point.time_forward, v + point.GetValueForward()); }
+        threedimutil::gl()->glEnd();
         
         threedimutil::color_3d(point_color);
-        glPointSize(control_point_size);
-        glBegin(GL_POINTS);
-        glVertex2d(t, v);
-        glEnd();
+        threedimutil::gl()->glPointSize(control_point_size);
+        threedimutil::gl()->glBegin(GL_POINTS);
+        threedimutil::gl()->glVertex2d(t, v);
+        threedimutil::gl()->glEnd();
     }
     
     /// \param image QImage that is formatted using QImage::Format_RGBA8888
     void DrawQImages(const QImage& image, double min_x, double max_x, double min_y, double max_y)
     {
-        glEnable(GL_TEXTURE_2D);
+        threedimutil::gl()->glEnable(GL_TEXTURE_2D);
         GLuint texture_id;
-        glGenTextures(1, &texture_id);
-        glBindTexture(GL_TEXTURE_2D, texture_id);
-        glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, image.width(), image.height(), 0, GL_RGBA, GL_UNSIGNED_BYTE, image.bits());
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        glBegin(GL_QUADS);
-        glTexCoord2d(0.0, 0.0); glVertex2d(min_x, min_y);
-        glTexCoord2d(1.0, 0.0); glVertex2d(max_x, min_y);
-        glTexCoord2d(1.0, 1.0); glVertex2d(max_x, max_y);
-        glTexCoord2d(0.0, 1.0); glVertex2d(min_x, max_y);
-        glEnd();
-        glDisable(GL_TEXTURE_2D);
-        glDeleteTextures(1, &texture_id);
+        threedimutil::gl()->glGenTextures(1, &texture_id);
+        threedimutil::gl()->glBindTexture(GL_TEXTURE_2D, texture_id);
+        threedimutil::gl()->glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+        threedimutil::gl()->glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, image.width(), image.height(), 0, GL_RGBA, GL_UNSIGNED_BYTE, image.bits());
+        threedimutil::gl()->glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        threedimutil::gl()->glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        threedimutil::gl()->glBegin(GL_QUADS);
+        threedimutil::gl()->glTexCoord2d(0.0, 0.0); threedimutil::gl()->glVertex2d(min_x, min_y);
+        threedimutil::gl()->glTexCoord2d(1.0, 0.0); threedimutil::gl()->glVertex2d(max_x, min_y);
+        threedimutil::gl()->glTexCoord2d(1.0, 1.0); threedimutil::gl()->glVertex2d(max_x, max_y);
+        threedimutil::gl()->glTexCoord2d(0.0, 1.0); threedimutil::gl()->glVertex2d(min_x, max_y);
+        threedimutil::gl()->glEnd();
+        threedimutil::gl()->glDisable(GL_TEXTURE_2D);
+        threedimutil::gl()->glDeleteTextures(1, &texture_id);
     }
 }
 
@@ -128,19 +128,19 @@ GraphWidget::GraphWidget(QWidget *parent) : QOpenGLWidget(parent)
 
 void GraphWidget::initializeGL()
 {
-    glClearColor(color_.background(0), color_.background(1), color_.background(2), 1.0f);
+    threedimutil::gl()->glClearColor(color_.background(0), color_.background(1), color_.background(2), 1.0f);
     
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    threedimutil::gl()->glEnable(GL_BLEND);
+    threedimutil::gl()->glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     
-    glEnable(GL_LINE_SMOOTH);
-    glEnable(GL_POINT_SMOOTH);
-    glEnable(GL_POLYGON_SMOOTH);
+    threedimutil::gl()->glEnable(GL_LINE_SMOOTH);
+    threedimutil::gl()->glEnable(GL_POINT_SMOOTH);
+    threedimutil::gl()->glEnable(GL_POLYGON_SMOOTH);
 }
 
 void GraphWidget::resizeGL(int w, int h)
 {
-    glViewport(0, 0, w, h);
+    threedimutil::gl()->glViewport(0, 0, w, h);
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -276,7 +276,7 @@ void GraphWidget::mouseReleaseEvent(QMouseEvent* /* event */)
 
 void GraphWidget::paintGL()
 {
-    glClear(GL_COLOR_BUFFER_BIT);
+    threedimutil::gl()->glClear(GL_COLOR_BUFFER_BIT);
     
     const double device_pixel_ratio = this->devicePixelRatioF();
     
@@ -289,7 +289,7 @@ void GraphWidget::paintGL()
     const double control_point_size  = 12.0 * device_pixel_ratio;
     
     // Set projection matrix
-    glMatrixMode(GL_PROJECTION);
+    threedimutil::gl()->glMatrixMode(GL_PROJECTION);
     SetOrthMatrix(min_t_, max_t_, min_v_, max_v_);
     
     if (core.show_time_varying_weight_)
@@ -363,8 +363,8 @@ void GraphWidget::paintGL()
     {
         if (use_per_curve_value_range_)
         {
-            glMatrixMode(GL_PROJECTION);
-            glPushMatrix();
+            threedimutil::gl()->glMatrixMode(GL_PROJECTION);
+            threedimutil::gl()->glPushMatrix();
             const double max_v = curve.GetMaximumKeyValue();
             const double min_v = curve.GetMinimumKeyValue();
             SetOrthMatrix(min_t_, max_t_, min_v - per_curve_value_padding_, max_v + per_curve_value_padding_);
@@ -381,15 +381,15 @@ void GraphWidget::paintGL()
         
         // Draw the primary curve
         threedimutil::color_4d(curve_color, alpha);
-        glLineWidth(curve_width);
-        glBegin(GL_LINE_STRIP);
+        threedimutil::gl()->glLineWidth(curve_width);
+        threedimutil::gl()->glBegin(GL_LINE_STRIP);
         for (const auto& p : sampling_points)
         {
             threedimutil::vertex_2d(p);
         }
-        glEnd();
+        threedimutil::gl()->glEnd();
         
-        if (!draw_handle) return;
+        if (!draw_handle) { return; }
         
         // Draw the control points and handles
         const auto& points = curve.GetControlPoints();
@@ -406,7 +406,7 @@ void GraphWidget::paintGL()
                        i == n_points - 1);
         }
         
-        if (use_per_curve_value_range_) glPopMatrix();
+        if (use_per_curve_value_range_) { threedimutil::gl()->glPopMatrix(); }
     };
     
     // Draw original curves
@@ -442,13 +442,13 @@ void GraphWidget::paintGL()
     // Draw curves
     for (auto item : core.object_->GetItems())
     {
-        if (!item->is_selected_) continue;
+        if (!item->is_selected_) { continue; }
         
         // Draw each degree of freedom (if keyframed)
         auto vars = item->GetVariablePointers();
-        if (vars[0]->IsKeyframed()) draw_curve(vars[0]->curve_, color_.curve_x);
-        if (vars[1]->IsKeyframed()) draw_curve(vars[1]->curve_, color_.curve_y);
-        if (vars[2]->IsKeyframed()) draw_curve(vars[2]->curve_, color_.curve_z);
+        if (vars[0]->IsKeyframed()) { draw_curve(vars[0]->curve_, color_.curve_x); }
+        if (vars[1]->IsKeyframed()) { draw_curve(vars[1]->curve_, color_.curve_y); }
+        if (vars[2]->IsKeyframed()) { draw_curve(vars[2]->curve_, color_.curve_z); }
     }
     
     // Highlight selected handle
@@ -457,8 +457,8 @@ void GraphWidget::paintGL()
         // TODO: Handle first and last points correctly
         if (use_per_curve_value_range_)
         {
-            glMatrixMode(GL_PROJECTION);
-            glPushMatrix();
+            threedimutil::gl()->glMatrixMode(GL_PROJECTION);
+            threedimutil::gl()->glPushMatrix();
             const double max_v = drag_target_->curve_ptr->GetMaximumKeyValue() + per_curve_value_padding_;
             const double min_v = drag_target_->curve_ptr->GetMinimumKeyValue() - per_curve_value_padding_;
             SetOrthMatrix(min_t_, max_t_, min_v, max_v);
@@ -485,7 +485,7 @@ void GraphWidget::paintGL()
                        false,
                        false);
         }
-        if (use_per_curve_value_range_) glPopMatrix();
+        if (use_per_curve_value_range_) { threedimutil::gl()->glPopMatrix(); }
     }
     
     // Highlight current frame

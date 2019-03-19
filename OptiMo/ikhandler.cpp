@@ -12,8 +12,8 @@
 #include "ikhandler.h"
 #include <thread>
 #include <rbdl/rbdl.h>
-#include <three-dim-util/gl.hpp>
-#include <three-dim-util/draw-functions.hpp>
+#include <three-dim-util/opengl2/gl.hpp>
+#include <three-dim-util/opengl2/draw-functions.hpp>
 #include "core.h"
 #include "joint.h"
 
@@ -192,7 +192,7 @@ void IkHandler::Draw(double t) const
     const Eigen::Vector3d target_position_in_world = GetPosition(t);
 
     const double radius = core.drawing_scale_ * 0.10;
-    glColor3d(0.1, 0.1, 0.6);
+    threedimutil::gl()->glColor3d(0.1, 0.1, 0.6);
     threedimutil::draw_sphere(radius, target_position_in_world);
 }
 
@@ -207,5 +207,3 @@ Eigen::Vector3d IkHandler::GetPosition(double t) const
 {
     return Eigen::Vector3d(pos_x_.GetValue(t), pos_y_.GetValue(t), pos_z_.GetValue(t));
 }
-
-
