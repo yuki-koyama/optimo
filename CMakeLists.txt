@@ -23,7 +23,7 @@ endif()
 
 # Dependencies
 find_package(Eigen3 REQUIRED)
-find_package(Qt5 COMPONENTS Concurrent Gui Widgets REQUIRED)
+find_package(Qt5 5.6 COMPONENTS Concurrent Gui Widgets REQUIRED)
 
 set(JSON11_BUILD_TESTS          OFF CACHE INTERNAL "" FORCE)
 set(JSON11_ENABLE_DR1467_CANARY OFF CACHE INTERNAL "" FORCE)
