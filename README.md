@@ -16,7 +16,6 @@ OptiMo is an "optimization-guided motion editing" system for authoring 3D charac
 
 - Eigen 3 <http://eigen.tuxfamily.org/> (`brew install eigen`)
 - Qt (5.6 or higher) <http://doc.qt.io/qt-5/> (`brew install qt`)
-- glm <https://glm.g-truc.net/> (`brew install glm`)
 
 ### Included via gitsubmodule
 
@@ -57,7 +56,7 @@ Yuki Koyama and Masataka Goto. 2018. OptiMo: Optimization-Guided Motion Editing 
 
 ## Licensing
 
-OptiMo is dual-licensed; You may use OptiMo under either *LGPLv3* or *our commercial license*. See the `LICENSE` files for details.
+OptiMo is dual-licensed; You may use OptiMo under either *LGPLv3* or *our commercial (proprietary) license*. See the `LICENSE` files for details.
 
 ## Contributing
 

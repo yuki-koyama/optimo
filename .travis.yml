@@ -6,10 +6,9 @@ os:
 - osx
 addons:
   homebrew:
+    update: true
     packages:
-    - cmake
     - eigen
-    - glm
     - qt
 script:
 - cmake . && make
