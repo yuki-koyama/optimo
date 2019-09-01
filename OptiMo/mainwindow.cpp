@@ -29,19 +29,19 @@
 
 namespace {
     Core& core = Core::GetInstance();
-    
+
     QTreeWidgetItem* MakeJointItemWithItsChildren(std::shared_ptr<Joint> joint)
     {
         auto item = new QTreeWidgetItem(QStringList(joint->GetName().c_str()));
-        
+
         for (auto child : joint->children_)
         {
             item->addChild(MakeJointItemWithItsChildren(child));
         }
-        
+
         return item;
     }
-    
+
     double GetSliderValue(const QSlider* slider)
     {
         return static_cast<double>(slider->value() - slider->minimum()) / static_cast<double>(slider->maximum() - slider->minimum());
@@ -66,18 +66,18 @@ namespace {
 }
 
 MainWindow::MainWindow(QWidget *parent) :
-    QMainWindow(parent),
-    ui(new Ui::MainWindow)
+QMainWindow(parent),
+ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-    
+
     graph_widget_ = ui->graphWidget;
     main_widget_ = ui->mainWidget;
     graph_widget_->SetMainWindow(this);
-    
+
     UpdateSliderMinMax();
     UpdateTimelineUi();
-    
+
     timer_ = std::make_shared<QTimer>(this);
     connect(timer_.get(), SIGNAL(timeout()), this, SLOT(StepFrame()));
     if (core.is_playing_)
@@ -92,11 +92,11 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->checkBox_process_vis->setChecked(core.show_process_animation_);
 
     UpdateTreeViewContents();
-    
+
     // Disable some widgets
     ui->widget->setVisible(false);
     ui->stepButton->setVisible(false);
-    
+
     core.UpdateFreezedDofsFromSelection();
 }
 
@@ -123,7 +123,7 @@ void MainWindow::UpdateTimelineUi()
 {
     ui->timelineSlider->setValue(core.current_frame_);
     ui->frameLabel->setText(QString::fromStdString("<b>" + std::to_string(core.current_frame_) + "</b>/" + std::to_string(core.max_frame_)));
-    
+
     ui->graphWidget->update();
     ui->mainWidget->update();
 }
@@ -177,7 +177,7 @@ void MainWindow::on_playButton_clicked()
 {
     core.is_playing_ = true;
     timer_->start(1000 / core.frames_per_second_);
-    
+
     ui->playButton->setEnabled(!core.is_playing_);
     ui->stopButton->setEnabled(core.is_playing_);
     ui->stepButton->setEnabled(!core.is_playing_);
@@ -228,7 +228,7 @@ void MainWindow::on_actionPerform_Optimization_triggered()
     // Set timer for updating the graph widget during optimization
     auto timer = std::make_shared<QTimer>(this);
     connect(timer.get(), SIGNAL(timeout()), ui->graphWidget, SLOT(update()));
-    
+
     if (core.show_process_animation_)
     {
         timer->start(1000 / 30);
@@ -247,13 +247,13 @@ void MainWindow::on_actionPerform_Optimization_triggered()
 
     // Wait for optimization finished
     watcher.waitForFinished();
-    
+
     // Stop timer (if it is running)
     if (core.show_process_animation_)
     {
         timer->stop();
     }
-    
+
     // Post processing
     core.PushHistory();
     core.UpdateOriginalParameters(core.object_->GetDescriptor());
@@ -264,31 +264,34 @@ void MainWindow::on_actionOptimize_Interactively_triggered()
 {
     // Save the original parameters for the case of cancel
     const auto x_original = core.object_->GetDescriptor();
-    
+
     // Set timer for updating the graph widget during optimization
     auto timer = std::make_shared<QTimer>(this);
     connect(timer.get(), SIGNAL(timeout()), ui->graphWidget, SLOT(update()));
     timer->start(1000 / 30);
-    
+
     // Show diaglog
     SliderDialog dialog(this);
-    
+
     // Define the background process
     std::function<void()> background_process = [&]()
     {
+        // This optimization may be explicitly stopped by user interaction
         core.PerformOptimization(true);
-        if (!dialog.done) background_process();
+
+        // If the user has not stopped the optimization, restart it again
+        if (!dialog.done) { background_process(); }
     };
 
     // Run optimization
     QFutureWatcher<void> watcher;
     watcher.setFuture(QtConcurrent::run(background_process));
     dialog.exec();
-    
+
     // Wait for optimization finished
     watcher.waitForFinished();
     timer->stop();
-    
+
     // Post processing
     if (!dialog.canceled)
     {
@@ -361,7 +364,7 @@ void MainWindow::on_checkBox_process_vis_stateChanged(int)
 void MainWindow::on_actionExport_as_Video_triggered()
 {
     const std::string base_directory = QFileDialog::getExistingDirectory().toStdString();
-    
+
     // Prepare output directory
     if (std::system(("cd " + base_directory).c_str()) != 0)
     {
@@ -377,7 +380,7 @@ void MainWindow::on_actionExport_as_Video_triggered()
     std::system(("mkdir " + directory + "/result").c_str());
     std::system(("mkdir " + directory + "/move").c_str());
     std::system(("mkdir " + directory + "/window").c_str());
-    
+
     // Render images
     for (int i = core.min_frame_; i <= core.max_frame_; ++ i)
     {
@@ -387,7 +390,7 @@ void MainWindow::on_actionExport_as_Video_triggered()
         ui->mainWidget->grabFramebuffer().save(QString::fromStdString(directory) + "/result/result" + QString("%1").arg(i, 6, 10, QChar('0')) + QString(".png"));
         ui->graphWidget->grabFramebuffer().save(QString::fromStdString(directory) + "/graph/graph" + QString("%1").arg(i, 6, 10, QChar('0')) + QString(".png"));
     }
-    
+
 #if 0
     // Render images with camera moving
     constexpr int loop = 4;
@@ -408,7 +411,7 @@ void MainWindow::on_actionExport_as_Video_triggered()
     }
     core.camera_.position_ = original_camera_position;
 #endif
-    
+
     core.current_frame_ = core.min_frame_ - 1;
     UpdateTimelineUi();
     ui->graphWidget->grabFramebuffer().save(QString::fromStdString(directory) + "/graph.png");
@@ -417,7 +420,7 @@ void MainWindow::on_actionExport_as_Video_triggered()
     ui->graphWidget->grabFramebuffer().save(QString::fromStdString(directory) + "/weight.png");
     core.show_time_varying_weight_ = false;
     core.current_frame_ = core.min_frame_;
-    
+
 #ifdef FFMPEG
     // Convert images into animations (this requires ffmpeg)
     std::system(std::string("/usr/local/bin/ffmpeg -framerate " + std::to_string(core.frames_per_second_) + " -i " + directory + "/window/window%06d.png -pix_fmt yuv420p -r " + std::to_string(core.frames_per_second_) + " -y " + directory + "/window.mp4").c_str());
@@ -425,7 +428,7 @@ void MainWindow::on_actionExport_as_Video_triggered()
     std::system(std::string("/usr/local/bin/ffmpeg -framerate " + std::to_string(core.frames_per_second_) + " -i " + directory + "/move/move%06d.png -pix_fmt yuv420p -r " + std::to_string(core.frames_per_second_) + " -y " + directory + "/move.mp4").c_str());
     std::system(std::string("/usr/local/bin/ffmpeg -framerate " + std::to_string(core.frames_per_second_) + " -i " + directory + "/graph/graph%06d.png -pix_fmt yuv420p -r " + std::to_string(core.frames_per_second_) + " -y " + directory + "/graph.mp4").c_str());
 #endif
-    
+
     // Output JSON
     core.WriteJson(directory + "/scene.json");
     core.WriteHistory(directory + "/history.json");
@@ -458,7 +461,7 @@ void MainWindow::on_treeWidget_itemSelectionChanged()
     {
         core.object_->GetItemByName(item->text(0).toStdString())->is_selected_ = true;
     }
-    
+
     // Finialize the process
     core.UpdateFreezedDofsFromSelection();
     UpdateTimelineUi();
@@ -512,7 +515,7 @@ void MainWindow::on_actionCapture_Window_triggered()
 {
     const std::string base_directory = QFileDialog::getExistingDirectory().toStdString();
     const std::string file_name      = Util::GetCurrentTimeInString() + ".png";
-    
+
     this->grab().save(QString::fromStdString(base_directory + "/" + file_name));
 }
 
@@ -521,33 +524,33 @@ void MainWindow::on_actionCapture_Window_triggered()
 void MainWindow::on_actionEdit_Time_Varying_Weight_triggered()
 {
     core.show_time_varying_weight_ = true;
-    
+
     const auto x_original = core.object_->GetDescriptor();
 
     auto timer = std::make_shared<QTimer>(this);
     connect(timer.get(), SIGNAL(timeout()), ui->graphWidget, SLOT(update()));
     timer->start(1000 / 30);
-    
+
     core.AddKernel(core.current_frame_);
-    
+
     TimeVaryingWeightDialog dialog(this, core.GetLastKernelPointer());
-    
+
     // Define the background process
     std::function<void()> background_process = [&]()
     {
         if (dialog.IsInteractive()) core.PerformOptimization(true);
         if (!dialog.Done()) background_process();
     };
-    
+
     // Run optimization
     QFutureWatcher<void> watcher;
     watcher.setFuture(QtConcurrent::run(background_process));
     dialog.exec();
-    
+
     // Wait for optimization finished
     watcher.waitForFinished();
     timer->stop();
-    
+
     core.show_time_varying_weight_ = false;
 
     if (!core.object_->GetDescriptor().isApprox(x_original))
@@ -555,7 +558,7 @@ void MainWindow::on_actionEdit_Time_Varying_Weight_triggered()
         core.PushHistory();
         core.UpdateOriginalParameters(core.object_->GetDescriptor());
     }
-    
+
     UpdateTimelineUi();
 }
 
