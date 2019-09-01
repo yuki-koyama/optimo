@@ -20,7 +20,7 @@
 
 class IkHandler;
 
-class Joint : public std::enable_shared_from_this<Joint>, public Item
+class Joint final : public std::enable_shared_from_this<Joint>, public Item
 {
 public:
     /// Constructor for building from scratch

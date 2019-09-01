@@ -24,7 +24,7 @@ namespace RigidBodyDynamics
 }
 
 /// \brief Class for managing Inverse Kinematics for a single kinematic chain
-class IkHandler : public std::enable_shared_from_this<IkHandler>, public Item
+class IkHandler final : public std::enable_shared_from_this<IkHandler>, public Item
 {
 public:
     IkHandler(const std::string& name)
