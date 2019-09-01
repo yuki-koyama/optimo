@@ -22,7 +22,7 @@
 namespace
 {
     Core& core = Core::GetInstance();
-    
+
     inline double GetSliderValue(const QSlider* slider)
     {
         return static_cast<double>(slider->value() - slider->minimum()) / static_cast<double>(slider->maximum() - slider->minimum());
@@ -31,26 +31,26 @@ namespace
 
 SliderDialog::SliderDialog(MainWindow* parent) : QDialog(parent)
 {
-    QVBoxLayout* layout = new QVBoxLayout(this);
+    QVBoxLayout* layout = new QVBoxLayout();
 
-    slider_ = new QSlider(Qt::Horizontal, this);
+    this->setLayout(layout);
+
+    slider_ = new QSlider(Qt::Horizontal);
     slider_->setMaximum(20);
-    
-    QLabel* label = new QLabel(QString("<b>Regularization weight:</b>"), this);
-    
+
+    QLabel* label = new QLabel(QString("<b>Regularization weight:</b>"));
+    QDialogButtonBox* button_box = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
+
     layout->addWidget(label);
     layout->addWidget(slider_);
-    
-    QDialogButtonBox* button_box = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
     layout->addWidget(button_box);
-    
+
     QObject::connect(slider_, SIGNAL(valueChanged(int)), this, SLOT(on_slider_value_changed(int)));
     QObject::connect(button_box, SIGNAL(accepted()), this, SLOT(accept()));
     QObject::connect(button_box, SIGNAL(rejected()), this, SLOT(reject()));
-    
+
+    // Set the initial tick position at the center of the slider
     slider_->setValue((slider_->maximum() - slider_->minimum()) / 2);
-    
-    setLayout(layout);
 }
 
 void SliderDialog::accept()
@@ -74,4 +74,3 @@ void SliderDialog::on_slider_value_changed(int /* value */)
     core.UpdateGlobalWeight(weight);
     core.stop_optimization_ = true;
 }
-
