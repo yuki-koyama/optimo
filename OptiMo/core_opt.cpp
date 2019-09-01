@@ -42,8 +42,8 @@ namespace
     double EvaluateObjective(const std::vector<double>& x, std::vector<double>& /*grad*/, void* data)
     {
         const Data* d = static_cast<Data*>(data);
-        const double min_t = d->min_t;
-        const double max_t = d->max_t;
+        const double& min_t = d->min_t;
+        const double& max_t = d->max_t;
         const VectorXd& x_original = d->x_original;
         const VectorXd eigen_x = d->revert(ConvertVec2Eigen(x));
 
@@ -67,7 +67,10 @@ void Core::PerformOptimization(bool explicit_termination)
     constexpr double epsilon = 1e-06;
 
     // Retrive x_initial
-    // Note: x_initial and x_original can be different.
+    //
+    // Note: x_initial and x_original can be different. x_original represents the descriptor before this user
+    // interaction begins. x_initial represents the descriptor when this optimization begins. A single user interaction
+    // may perform the optimization multile times.
     VectorXd x_initial = object_->GetDescriptor();
     const int n = static_cast<int>(x_initial.rows() / dim);
     
