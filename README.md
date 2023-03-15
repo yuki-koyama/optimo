@@ -1,6 +1,6 @@
 # OptiMo
 
-[![Build Status](https://travis-ci.com/yuki-koyama/optimo.svg?branch=master)](https://travis-ci.com/yuki-koyama/optimo)
+[![macOS](https://github.com/yuki-koyama/optimo/actions/workflows/macos.yml/badge.svg)](https://github.com/yuki-koyama/optimo/actions/workflows/macos.yml)
 
 OptiMo is an "optimization-guided motion editing" system for authoring 3D character animations. OptiMo allows animators to effectively utilize the power of numerical optimization while keeping appropriate control.
 
