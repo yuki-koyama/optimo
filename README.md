@@ -15,7 +15,7 @@ OptiMo is an "optimization-guided motion editing" system for authoring 3D charac
 ### Prerequisites
 
 - Eigen 3 <http://eigen.tuxfamily.org/> (`brew install eigen`)
-- Qt (5.6 or higher) <http://doc.qt.io/qt-5/> (`brew install qt`)
+- Qt (5.6 or higher) <http://doc.qt.io/qt-5/> (`brew install qt@5`)
 
 ### Included via gitsubmodule
 
