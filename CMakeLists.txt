@@ -16,6 +16,9 @@ endif()
 if(APPLE AND EXISTS /usr/local/opt/qt)
 	list(APPEND CMAKE_PREFIX_PATH "/usr/local/opt/qt")
 endif()
+if(APPLE AND EXISTS /opt/homebrew/opt/qt5)
+    list(APPEND CMAKE_PREFIX_PATH "/opt/homebrew/opt/qt5")
+endif()
 
 ######################################################################
 # Build rules for the main project
